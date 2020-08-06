@@ -133,3 +133,14 @@
         });
    </code>
    </pre>
+
+### iOS原生App配置
+#### 在Info.plist中添加相机、相册权限
+```
+        <key>NSCameraUsageDescription</key>
+        <string>需要使用相机拍照进行实名认证、银行卡识别</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>需要保存身份证、银行卡照片到相册</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>需要读取相册中的身份证照片进行实名认证</string>
+```
