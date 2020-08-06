@@ -117,10 +117,9 @@
    </pre>
 
 2. 设置DownloadListener，实现onDownloadStart，进行下载文件的处理，参考如下代码,实现默认打开系统浏览器进行下载：
-
    <pre>
    <code>
-  webView.setDownloadListener(new DownloadListener() {
+     webView.setDownloadListener(new DownloadListener() {
             @Override
             public void onDownloadStart(String s, String s1, String s2, String s3, long l) {
                 try {
@@ -134,14 +133,3 @@
         });
    </code>
    </pre>
-
-
-
-
-
-
-
-
-
-
-
