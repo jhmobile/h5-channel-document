@@ -39,3 +39,109 @@
 ### 结果
 完整请求路由：https://m.jinhui365.cn?channel=jinhui&token=QOFO1M83pTmsElWhQWNSOX8l7Do%2BwKLjn47yw80JNsa1wI0M1IMELxLS1%2Fq4JNy3kXPusmndgzo%3D
 
+
+### Android 原生webview支持
+业务实现涉及图片文件选择，及文件下载，需要原生webview做以下支持：
+
+1. 设置WebChromeClient，实现对openFileChooser的支持，支持选择文件和图片，参考如下代码：
+   <pre>
+   <code>
+    private ValueCallback<Uri> uploadFile;
+    private ValueCallback<Uri[]> uploadFiles;
+    webView.setWebChromeClient(new JHWebChromeClient() {
+            // For Android 3.0+
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
+                Log.i("test", "openFileChooser 1");
+                uploadFile = uploadMsg;
+                openFileChooseProcess();
+            }
+
+            // For Android < 3.0
+            public void openFileChooser(ValueCallback<Uri> uploadMsgs) {
+                Log.i("test", "openFileChooser 2");
+                uploadFile = uploadMsgs;
+                openFileChooseProcess();
+            }
+
+            // For Android  > 4.1.1
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
+                Log.i("test", "openFileChooser 3");
+                uploadFile = uploadMsg;
+                openFileChooseProcess();
+            }
+
+            // For Android  >= 5.0
+            public boolean onShowFileChooser(WebView webView,
+                                             ValueCallback<Uri[]> filePathCallback,
+                                             FileChooserParams fileChooserParams) {
+                Log.i("test", "openFileChooser 4:" + filePathCallback.toString());
+                uploadFiles = filePathCallback;
+                openFileChooseProcess();
+                return true;
+            }
+        });
+        private void openFileChooseProcess() {
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("*/*");
+        startActivityForResult(Intent.createChooser(i, "上传文件"), 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                if (null != uploadFile) {
+                    Uri result = data == null ? null
+                            : data.getData();
+                    uploadFile.onReceiveValue(result);
+                    uploadFile = null;
+                }
+                if (null != uploadFiles) {
+                    Uri result = data == null ? null
+                            : data.getData();
+                    uploadFiles.onReceiveValue(new Uri[]{result});
+                    uploadFiles = null;
+                }
+            } else if (resultCode == RESULT_CANCELED) {
+                if (null != uploadFile) {
+                    uploadFile.onReceiveValue(null);
+                    uploadFile = null;
+                }
+            }
+        }
+    }
+
+   </code>
+   </pre>
+
+2. 设置DownloadListener，实现onDownloadStart，进行下载文件的处理，参考如下代码,实现默认打开系统浏览器进行下载：
+
+   <pre>
+   <code>
+  webView.setDownloadListener(new DownloadListener() {
+            @Override
+            public void onDownloadStart(String s, String s1, String s2, String s3, long l) {
+                try {
+                    Uri uri = Uri.parse(s);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                } catch (Exception e) {
+
+                }
+            }
+        });
+   </code>
+   </pre>
+
+
+
+
+
+
+
+
+
+
+
