@@ -1,9 +1,17 @@
 # h5-channel-document
 用于说明H5渠道接入的文档
 
+## 身份识别
+通过在访问时携带query【channel】申明自身渠道。例如: https://m.jinhui365.cn?channel=jinhui, 这里的channel用作渠道身份识别。
+
+## 其他必要信息
+字段 |说明 | 举例
+---|---|---
+appKey| 种cookie|
+appSecert | 种cookie |
+
 ## 免登对接
-### 身份识别
-通过在访问时携带query申明自身渠道。例如: https://m.jinhui365.cn?channel=jinhui。这里的channel用作渠道身份识别。
+通过在访问时携带query【token】作为用户信息。
 
 ### 必要信息说明
 在访问时，携带必要信息，必要信息为3DES加密后的字符串，作为query携带。具体内容如下：
@@ -32,12 +40,27 @@
 2. base64编码：Base64.encodeBase64String
 3. url编码：URLEncoder.encode
 
-
-
 进行3DES加密后为：QOFO1M83pTmsElWhQWNSOX8l7Do%2BwKLjn47yw80JNsa1wI0M1IMELxLS1%2Fq4JNy3kXPusmndgzo%3D
 
-### 结果
-完整请求路由：https://m.jinhui365.cn?channel=jinhui&token=QOFO1M83pTmsElWhQWNSOX8l7Do%2BwKLjn47yw80JNsa1wI0M1IMELxLS1%2Fq4JNy3kXPusmndgzo%3D
+### 完整请求路由
+https://m.jinhui365.cn?channel=jinhui&token=QOFO1M83pTmsElWhQWNSOX8l7Do%2BwKLjn47yw80JNsa1wI0M1IMELxLS1%2Fq4JNy3kXPusmndgzo%3D
+
+## 通信定义
+原生APP需在全局定义一个`jinhuiApp`的全局变量，可被H5端通过`window.jinhuiApp`获取到，该变量为json类型，以下为内部定义：
+字段|类型|说明
+---|---|---
+sendApp| function | { id: '', type: '', data: {} } json string
+sendWeb| function | { id: '', message: { code: 0, message: "" }, data: {} } json string
+
+H5向原生APP发送消息使用**sendApp**方法，原生APP回复消息通过**sendWeb**方法。固定一条消息通过id进行标识。**type**字段可进行业务扩展。
+
+> PS: message内部code用于判断是否调用成功，成功为0，失败为其他。message用作失败时的错误信息。
+
+### type定义
+类型 | type字段 | 参数 | 返回值说明
+---|---|---|---
+栈长查询 | canGoBack | 无 | message.code == 0 为可以进行页面回退
+关闭webview | closeWebview | 无 | 无
 
 
 ### Android 原生webview支持
