@@ -8,14 +8,14 @@
 channel | query | 是
 token | query | 否
 appKey | 种cookie | 是
-appSecert | 种cookie | 是
+appSecret | 种cookie | 是
 
 ### 需要提供的内容
 字段 | 说明 
 ---|---
 channel | 由我方提供
 appKey | 由我方提供测试、生产的appKey
-appSecert | 由我方提供测试、生产的appKey
+appSecret | 由我方提供测试、生产的appKey
 3DES算法秘钥 | 由我方提供
 
 ## 渠道识别
