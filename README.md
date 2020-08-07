@@ -63,7 +63,7 @@ https://m.jinhui365.cn?channel=jinhui&token=QOFO1M83pTmsElWhQWNSOX8l7Do%2BwKLjn4
 字段|类型| 参数 | 说明
 ---|---|---|---
 sendApp| function | { id: '', type: '', data: {} } json string | 从原生App载入到window.jinhuiApp中
-sendWeb| function | { id: '', message: { code: 0, message: "" }, data: {} } json string | 用于接收原生App发送过来的信息
+sendWeb| function | { id: '', message: { code: 0, message: "" }, data: {} } json string | 由H5定义,用于接收原生App发送过来的信息
 
 H5向原生APP发送消息使用**sendApp**方法，原生APP回复消息通过**sendWeb**方法。固定一条消息通过id进行标识。**type**字段可进行业务扩展。
 
