@@ -1,19 +1,40 @@
 # h5-channel-document
 用于说明H5渠道接入的文档
 
-## 身份识别
-通过在访问时携带query【channel】申明自身渠道。例如: https://m.jinhui365.cn?channel=jinhui, 这里的channel用作渠道身份识别。
-
-## 其他必要信息
-字段 |说明 | 举例
+## 必要信息
+### 参数信息
+字段 |说明 | 是否必须
 ---|---|---
-appKey| 种cookie|
-appSecert | 种cookie |
+channel | query | 是
+token | query | 否
+appKey | 种cookie | 是
+appSecert | 种cookie | 是
+
+### 需要提供的内容
+字段 | 说明 
+---|---
+channel | 由我方提供
+appKey | 由我方提供测试、生产的appKey
+appSecert | 由我方提供测试、生产的appKey
+3DES算法秘钥 | 由我方提供
+
+## 渠道识别
+通过在访问时携带query【**channel**】申明自身渠道。例如: https://m.jinhui365.cn?channel=jinhui, 这里的channel用作渠道身份识别。
 
 ## 免登对接
 通过在访问时携带query【token】作为用户信息。
 
-### 必要信息说明
+### 算法
+加密采用3DES加密算法，以下为算法信息：
+
+参数名|	值
+---|---
+加密模式|	ECB
+填充方式|	pkcs7padding
+字符串编码	|utf-8
+密钥	|通过协商确定，例如：f6c94964aec7607f68082003
+
+### 信息说明
 在访问时，携带必要信息，必要信息为3DES加密后的字符串，作为query携带。具体内容如下：
 
 名称|	字段	| 举例
@@ -23,22 +44,14 @@ appSecert | 种cookie |
 手机号|	mobile|	13800000000
 资金账号|	bankAccount	|550000507
 
-将上面四个字段的值通过【|】进行分割后拼接成字符串，例如：330103197001010719|日终测试1|13800000000|550000507。
+> PS:将上面四个字段的值通过【|】进行分割后拼接成字符串，例如：330103197001010719|日终测试1|13800000000|550000507。
 
-#### 必要信息加密
-3DES参数名|	值
----|---
-加密模式|	ECB
-填充方式|	pkcs7padding
-字符串编码	|utf-8
-密钥	|通过协商确定，例如：f6c94964aec7607f68082003
+### 加密过程
+加密结果为：`URLEncoder.encode(Base64.encodeBase64String(encryptMode(value.getBytes(CHARSET))), CHARSET);`
 
-#### 加密过程
-加密结果为：URLEncoder.encode(Base64.encodeBase64String(encryptMode(value.getBytes(CHARSET))), CHARSET);
-
-1. DESede加密后的结果：encryptMode(value.getBytes(CHARSET))
-2. base64编码：Base64.encodeBase64String
-3. url编码：URLEncoder.encode
+1. DESede加密后的结果：`encryptMode(value.getBytes(CHARSET))`
+2. base64编码：`Base64.encodeBase64String`
+3. url编码：`URLEncoder.encode`
 
 进行3DES加密后为：QOFO1M83pTmsElWhQWNSOX8l7Do%2BwKLjn47yw80JNsa1wI0M1IMELxLS1%2Fq4JNy3kXPusmndgzo%3D
 
@@ -47,10 +60,10 @@ https://m.jinhui365.cn?channel=jinhui&token=QOFO1M83pTmsElWhQWNSOX8l7Do%2BwKLjn4
 
 ## 通信定义
 原生APP需在全局定义一个`jinhuiApp`的全局变量，可被H5端通过`window.jinhuiApp`获取到，该变量为json类型，以下为内部定义：
-字段|类型|说明
----|---|---
-sendApp| function | { id: '', type: '', data: {} } json string
-sendWeb| function | { id: '', message: { code: 0, message: "" }, data: {} } json string
+字段|类型| 参数 | 说明
+---|---|---|---
+sendApp| function | { id: '', type: '', data: {} } json string | 从原生App载入到window.jinhuiApp中
+sendWeb| function | { id: '', message: { code: 0, message: "" }, data: {} } json string | 用于接收原生App发送过来的信息
 
 H5向原生APP发送消息使用**sendApp**方法，原生APP回复消息通过**sendWeb**方法。固定一条消息通过id进行标识。**type**字段可进行业务扩展。
 
@@ -61,7 +74,9 @@ H5向原生APP发送消息使用**sendApp**方法，原生APP回复消息通过*
 ---|---|---|---
 栈长查询 | canGoBack | 无 | message.code == 0 为可以进行页面回退
 关闭webview | closeWebview | 无 | 无
+获取加密token | getToken | 无 | data.token
 
+> PS: 获取加密token用于未登陆的情况（访问H5没有传四要素），这时调用原生App，需原生App处理用户登陆，并将token传给h5。
 
 ### Android 原生webview支持
 业务实现涉及图片文件选择，及文件下载，需要原生webview做以下支持：
