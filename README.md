@@ -80,6 +80,18 @@ H5向原生APP发送消息使用**sendApp**方法，原生APP回复消息通过*
 
 ### Android 原生webview支持
 业务实现涉及图片文件选择，及文件下载，需要原生webview做以下支持：
+1. Manifest.xml 添加如下权限：
+   <pre>
+   <code>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- 允许程序使用照相设备 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 录音权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+   </code>
+   </pre>
 
 1. 设置WebChromeClient，实现对openFileChooser的支持，支持选择文件和图片，参考如下代码：
    <pre>
